@@ -34,8 +34,10 @@ def _process_pdf(input_file: Path) -> None:
 
 
 # Pattern: DayAbbrev DD.MM.YYYY HH:MM Treatment (TherapistName)
-# Example: Di27.01.202616:40KG ZNS (Katja)
-_APPOINTMENT_PATTERN = r"[A-Za-z]{2}(\d{2}\.\d{2}\.\d{4})(\d{2}:\d{2})[^(]+\(([^)]+)\)"
+# Example: Di27.01.202616:40KG ZNS (Katja) or Do 08.01.2026 14:30 O60 (Thomas)
+_APPOINTMENT_PATTERN = (
+    r"[A-Za-z]{2}\s*(\d{2}\.\d{2}\.\d{4})\s*(\d{2}:\d{2})[^(]+\(([^)]+)\)"
+)
 
 
 def _extract_appointments(text: str) -> list[Appointment]:
