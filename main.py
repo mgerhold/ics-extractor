@@ -23,6 +23,7 @@ class Appointment(NamedTuple):
 
 
 def main() -> None:
+    _INPUT_PATH.mkdir(exist_ok=True)
     _OUTPUT_PATH.mkdir(exist_ok=True)
     config: Final = Config.load_or_default(_CONFIG_PATH)
     for input_file in _INPUT_PATH.glob("*.pdf"):
