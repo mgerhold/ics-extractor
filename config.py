@@ -15,6 +15,7 @@ class Config(BaseModel):
         "KG ZNS": "Krankengymnastik",
         "O60": "Osteopathie",
     }
+    appointment_duration_minutes: int = 30
     
     @classmethod
     def load_or_default(cls, path: Path) -> Self:

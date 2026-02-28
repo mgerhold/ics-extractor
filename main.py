@@ -90,8 +90,8 @@ def _create_event(appointment: Appointment, event_id: int, config: Config) -> Ev
     """Create an iCalendar event from an appointment."""
     event: Final = Event()
 
-    # Assume 30-minute duration for appointments
-    duration: Final = timedelta(minutes=30)
+    # Get appointment duration from config
+    duration: Final = timedelta(minutes=config.appointment_duration_minutes)
     end_time: Final = appointment.date + duration
 
     # Create unique ID
