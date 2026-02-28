@@ -1,4 +1,5 @@
 import re
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Final, NamedTuple, final
@@ -10,9 +11,23 @@ from config import Config
 from google_calendar import upload_appointments_to_google_calendar
 
 
-_INPUT_PATH = Path(__file__).parent / "input"
-_OUTPUT_PATH = Path(__file__).parent / "output"
-_CONFIG_PATH = Path(__file__).parent / "config.json"
+def _get_base_path() -> Path:
+    """Get the base directory for the application.
+    
+    When running as a PyInstaller bundle, use the directory containing the .exe.
+    Otherwise, use the directory containing this script.
+    """
+    if getattr(sys, 'frozen', False):
+        # Running as compiled executable
+        return Path(sys.executable).parent
+    else:
+        # Running as script
+        return Path(__file__).parent
+
+
+_INPUT_PATH = _get_base_path() / "input"
+_OUTPUT_PATH = _get_base_path() / "output"
+_CONFIG_PATH = _get_base_path() / "config.json"
 
 
 @final
