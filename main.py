@@ -7,6 +7,7 @@ from icalendar import Calendar, Event
 from pypdf import PdfReader
 
 from config import Config
+from google_calendar import upload_appointments_to_google_calendar
 
 
 _INPUT_PATH = Path(__file__).parent / "input"
@@ -44,6 +45,10 @@ def _process_pdf(input_file: Path, config: Config) -> None:
     output_file: Final = _OUTPUT_PATH / f"{input_file.stem}.ics"
     output_file.write_bytes(ics_content)
     print(f"\nGenerated ICS file: {output_file}")
+
+    # Upload to Google Calendar if enabled
+    if config.enable_google_calendar_upload:
+        upload_appointments_to_google_calendar(appointments, config)
 
 
 # Pattern: DayAbbrev DD.MM.YYYY HH:MM Treatment (TherapistName)

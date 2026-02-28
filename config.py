@@ -16,6 +16,8 @@ class Config(BaseModel):
         "O60": "Osteopathie",
     }
     appointment_duration_minutes: int = 30
+    enable_google_calendar_upload: bool = False
+    google_calendar_id: str = "primary"
     
     @classmethod
     def load_or_default(cls, path: Path) -> Self:

@@ -48,3 +48,7 @@ output/*
 !output/.gitkeep
 
 config.json
+
+# Google Calendar OAuth credentials
+credentials.json
+token.json
