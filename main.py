@@ -42,7 +42,8 @@ def _extract_appointments(text: str) -> list[Appointment]:
     """Extract appointments from PDF text."""
 
     return [
-        _match_to_appointment(match) for match in re.finditer(_APPOINTMENT_PATTERN, text)
+        _match_to_appointment(match)
+        for match in re.finditer(_APPOINTMENT_PATTERN, text)
     ]
 
 
