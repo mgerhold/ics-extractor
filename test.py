@@ -17,14 +17,19 @@ class TestAppointment:
     def test_appointment_creation(self) -> None:
         """Test creating an Appointment."""
         date: Final = datetime(2026, 1, 27, 16, 40)
-        appointment: Final = Appointment(date=date, therapist_name="Katja")
+        appointment: Final = Appointment(
+            date=date, therapy_kind="KG ZNS", therapist_name="Katja"
+        )
         assert appointment.date == date
+        assert appointment.therapy_kind == "KG ZNS"
         assert appointment.therapist_name == "Katja"
 
     def test_appointment_immutable(self) -> None:
         """Test that Appointment is immutable."""
         date: Final = datetime(2026, 1, 27, 16, 40)
-        appointment: Final = Appointment(date=date, therapist_name="Katja")
+        appointment: Final = Appointment(
+            date=date, therapy_kind="KG ZNS", therapist_name="Katja"
+        )
         with pytest.raises(AttributeError):
             appointment.date = datetime(2026, 1, 28, 10, 0)  # type: ignore[misc]
 
@@ -34,30 +39,37 @@ class TestMatchToAppointment:
     """Test the _match_to_appointment function."""
 
     @pytest.mark.parametrize(
-        ("text", "expected_date", "expected_therapist"),
+        ("text", "expected_date", "expected_therapy_kind", "expected_therapist"),
         [
             pytest.param(
                 "Di27.01.202616:40KG ZNS (Katja)",
                 datetime(2026, 1, 27, 16, 40),
+                "KG ZNS",
                 "Katja",
                 id="format_without_space",
             ),
             pytest.param(
                 "Do 08.01.2026 14:30 O60 (Thomas)",
                 datetime(2026, 1, 8, 14, 30),
+                "O60",
                 "Thomas",
                 id="format_with_space",
             ),
         ],
     )
     def test_parse_appointment_formats(
-        self, text: str, expected_date: datetime, expected_therapist: str
+        self,
+        text: str,
+        expected_date: datetime,
+        expected_therapy_kind: str,
+        expected_therapist: str,
     ) -> None:
         """Test parsing different appointment formats."""
         match: Final = re.search(_APPOINTMENT_PATTERN, text)
         assert match is not None
         appointment: Final = _match_to_appointment(match)
         assert appointment.date == expected_date
+        assert appointment.therapy_kind == expected_therapy_kind
         assert appointment.therapist_name == expected_therapist
 
     @pytest.mark.parametrize(
@@ -115,6 +127,24 @@ class TestMatchToAppointment:
         assert match is not None
         appointment: Final = _match_to_appointment(match)
         assert appointment.date == expected_date
+
+    @pytest.mark.parametrize(
+        ("text", "expected_therapy_kind"),
+        [
+            pytest.param("Di27.01.202616:40KG ZNS (Katja)", "KG ZNS", id="kg_zns"),
+            pytest.param("Do 08.01.2026 14:30 O60 (Thomas)", "O60", id="o60"),
+            pytest.param("Di27.01.202616:40MT (Mike)", "MT", id="mt"),
+            pytest.param("Di27.01.202616:40Massage (Anna)", "Massage", id="massage"),
+        ],
+    )
+    def test_different_therapy_kinds(
+        self, text: str, expected_therapy_kind: str
+    ) -> None:
+        """Test different therapy kinds."""
+        match: Final = re.search(_APPOINTMENT_PATTERN, text)
+        assert match is not None
+        appointment: Final = _match_to_appointment(match)
+        assert appointment.therapy_kind == expected_therapy_kind
 
     def test_whitespace_in_therapist_name(self) -> None:
         """Test that whitespace is stripped from therapist name."""
@@ -300,4 +330,5 @@ class TestAppointmentPattern:
         assert match is not None
         assert match.group(1) == "27.01.2026"  # Date
         assert match.group(2) == "16:40"  # Time
-        assert match.group(3) == "Katja"  # Therapist name
+        assert match.group(3) == "KG ZNS"  # Therapy kind
+        assert match.group(4) == "Katja"  # Therapist name
